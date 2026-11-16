@@ -1,0 +1,12 @@
+# dsh-handoff — offline handoff bundles.
+# Optional settings (all have defaults; add only what you need):
+#   exportRoot:          where bundles are written and read (default: %USERPROFILE%\dsh-handoff)
+#   targetWorkspace:     on import, restore every workspace here instead of its original path
+#   workspaces:          extra directories to pack besides each Session's own workspace
+#   overwrite: true      replace existing files on import (default: keep existing files)
+#   includeAttachments: false   skip <DSH_HOME>/attachments
+#   maxWorkspaceBytes:   2 GB guard per workspace
+- insert:
+    - id: handoff
+      name: '@local/dsh-handoff'
+      config: {}

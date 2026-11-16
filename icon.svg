@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Handoff bundles">
+  <rect x="4" y="16" width="36" height="32" rx="5" fill="#2F6FEB"/>
+  <rect x="10" y="10" width="24" height="12" rx="3" fill="#1B4FBF"/>
+  <path d="M12 28h20M12 36h14" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M42 32h14m0 0-6-7m6 7-6 7" stroke="#111827" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

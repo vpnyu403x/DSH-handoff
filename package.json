@@ -1,0 +1,33 @@
+{
+  "name": "@local/dsh-handoff",
+  "version": "0.9.3",
+  "private": true,
+  "type": "module",
+  "description": "Pack Sessions, attachments and workspaces into one offline folder and restore them on another machine.",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "lib",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-context-menu"
+      ]
+    }
+  }
+}

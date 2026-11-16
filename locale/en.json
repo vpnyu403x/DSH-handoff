@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Handoff bundles",
+    "description": "Packs every Session, its workspace and all attachments into one dated folder, then restores that folder on another machine. Right-click a Session to export into any folder. No network access."
+  }
+}
