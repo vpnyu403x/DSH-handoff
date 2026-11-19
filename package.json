@@ -1,6 +1,6 @@
 {
   "name": "@local/dsh-handoff",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "private": true,
   "type": "module",
   "description": "Pack Sessions, attachments and workspaces into one offline folder and restore them on another machine.",

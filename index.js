@@ -19,6 +19,7 @@ import {
   listBundles,
   resolvePaths,
 } from './lib/core.js'
+import { registerImportedSessions } from './lib/register.js'
 
 export const name = 'handoff'
 export const inject = ['commands']
@@ -77,7 +78,11 @@ export function apply(ctx, config = {}) {
         }
         if (verb === 'import') {
           const result = importBundle({ config: settings, name: rest, log: line => logger.info?.(line) })
-          return { kind: 'success', text: importText(result) }
+          // Files alone are not enough on builds whose sidebar renders Workspace
+          // membership from the durable registry: attach every restored Session
+          // before reporting success. Registration failures never fail the import.
+          const registration = await registerImportedSessions(ctx, result.sessions, { home: resolvePaths(settings).home, log: line => logger.info?.(line) })
+          return { kind: 'success', text: importText(result, registration) }
         }
         return { kind: 'error', text: `未知子命令：${verb}\n\n${USAGE}` }
       } catch (error) {
@@ -477,9 +482,10 @@ function exportText(result) {
 /**
  * Render a successful import.
  * @param {object} result - import summary.
+ * @param {{mode?: string, attached?: object[], failed?: object[]}} [registration] - workspace registration outcome.
  * @returns {string} display text.
  */
-function importText(result) {
+function importText(result, registration) {
   const written = result.sessions.filter(item => item.copied > 0).length
   const repaired = result.sessions.filter(item => item.repaired > 0).length
   const skipped = result.sessions.filter(item => item.target === null || (item.copied === 0 && item.repaired === 0)).length
@@ -497,7 +503,23 @@ function importText(result) {
   }
   lines.push(`附件：${result.attachments.files} 个文件（跳过 ${result.attachments.skipped}）`)
   lines.push('')
-  lines.push('重启 DSH 后，导入的会话会出现在会话列表中。')
+
+  const attached = registration?.attached?.length ?? 0
+  const failed = registration?.failed?.length ?? 0
+  if (attached > 0) {
+    lines.push(`已登记到工作区：${attached} 个会话${failed > 0 ? `（失败 ${failed} 个）` : ''}`)
+    for (const item of registration.attached.slice(0, 10)) lines.push(`  ${item.id} → ${item.workspace}`)
+  } else if (failed > 0) {
+    lines.push(`未能登记到工作区：${failed} 个`)
+    for (const item of registration.failed.slice(0, 10)) lines.push(`  ${item.id}：${item.reason}`)
+  }
+  if (registration?.mode === 'file') {
+    lines.push('会话已写入 workspace.json（已自动备份），重启 DSH 后出现在会话列表。')
+  } else if (attached > 0) {
+    lines.push('重启 DSH 后，导入的会话会出现在会话列表中。')
+  } else {
+    lines.push('重启 DSH 后如果仍看不到会话，请运行 /handoff status 检查工作区映射。')
+  }
   const moved = result.workspaces.some(item => item.target && item.target !== item.source)
   if (moved) {
     lines.push('会话里的工作目录已自动改成新位置，可以直接继续对话。')
